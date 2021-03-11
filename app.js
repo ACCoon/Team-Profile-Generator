@@ -30,66 +30,70 @@ const empPrompt = [
     name: 'email'
   }
 ];
+const askPrompt = [
+  {
+    type: 'rawlist',
+    message: 'Who do you want to add to the project?',
+    name: 'next',
+    choices: [
+      'Engineer',
+      'Intern',
+      'Nobody else'
+    ]
+  }
+];
 const managerPrompt = empPrompt.concat({
   type: 'input',
   message: 'Enter your office number:',
   name: 'office'
-});
+}, askPrompt);
 const engPrompt = empPrompt.concat({
   type: 'input',
   message: 'Enter their github:',
   name: 'github'
-});
+}, askPrompt);
 const internPrompt = empPrompt.concat({
   type: 'input',
   message: 'Enter employee school:',
   name: 'school'
-});
+}, askPrompt);
+let askAgain = 'Manager';
+let nextPrompt = managerPrompt;
 
+async function getTeamMembers(){
 // Prompt user for first team member data. First team member is project manager.
-inquirer
-  .prompt(managerPrompt)
-  .then((data) => {
-    team.push(new Manager(data.name, data.id, data.email, data.office));
-    let addAnother = true;
-    while(addAnother){
-      inquirer
-        .prompt([
-          {
-            type: 'rawlist',
-            message: 'Who do you want to add to the project?',
-            name: 'next',
-            choices: [
-              'Engineer',
-              'Intern',
-              'Nobody else'
-            ]
-          }
-        ])
-        .then((data) => {
-          switch(data.next) {
-            case 'Engineer':
-              inquirer
-                .prompt([engPrompt])
-                .then((data) => {
-                  team.push(new Engineer(data.name, data.id, data.email, data.github));
-                });
-              break;
-            case 'Intern':
-              inquirer
-                .prompt([internPrompt])
-                .then((data) => {
-                  team.push(new Intern(data.name, data.id, data.email, data.school))
-                });
-              break;
+while (askAgain !== 'Nobody else'){
+  if (askAgain === 'Engineer'){
+    nextPrompt = engPrompt;
+  }
+  else if (askAgain === 'Intern'){
+    nextPrompt = internPrompt;
+  }
 
-            case 'Nobody else':
-              addAnother = false;
-          }
-        });
-    }
+  // Call Inquirer to prompt user for input based on selected questions.
+  // Default question set is Manager.
+  let data = await inquirer.prompt(nextPrompt);
+  let teamMember;
+
+  switch(askAgain) {
+    case 'Manager':
+      teamMember = new Manager(data.name, data.id, data.email, data.office);
+      break;
+    case 'Engineer':
+      teamMember = new Engineer(data.name, data.id, data.email, data.github);
+      break;
+    case 'Intern':
+      teamMember = new Intern(data.name, data.id, data.email, data.school);
+      break;
+  }
+
+    team.push(teamMember);
+    askAgain = data.next;
     console.log(team);
-  });
+  }
+}
+
+getTeamMembers();
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will

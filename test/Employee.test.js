@@ -17,18 +17,15 @@ test("Can set name via constructor arguments", () => {
 });
 
 test("Can set id via constructor argument", () => {
-  const name = "Andrew";
   const id = 0;
-  const obj = new Employee(name, id);
+  const obj = new Employee("", id);
 
   expect(obj.id).toEqual(id);
 });
 
 test("Can set email via constructor argument", () => {
-  const name = "Andrew";
-  const id = 0;
   const email = "123@test.com";
-  const obj = new Employee(name, id, email);
+  const obj = new Employee("", 0, email);
 
   expect(obj.email).toEqual(email);
 });
@@ -41,18 +38,15 @@ test("Can get name via getName()", () => {
 });
 
 test("Can get id via getId()", () => {
-  const name = "Andrew";
   const id = 0;
-  const obj = new Employee(name, id);
+  const obj = new Employee("", id);
 
   expect(obj.getId()).toEqual(id);
 });
 
 test("Can get email via getEmail()", () => {
-  const name = "Andrew";
-  const id = 0;
   const email = "123@test.com";
-  const obj = new Employee(name, id, email);
+  const obj = new Employee("", 0, email);
 
   expect(obj.getEmail()).toEqual(email);
 });

@@ -12,9 +12,84 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+const team = [];
+const empPrompt = [
+  {
+    type: 'input',
+    message: 'Enter employee name:',
+    name: 'name'
+  },
+  {
+    type: 'input',
+    message: 'Enter employee ID:',
+    name: 'id'
+  },
+  {
+    type: 'input',
+    message: 'Enter employee email:',
+    name: 'email'
+  }
+];
+const managerPrompt = empPrompt.concat({
+  type: 'input',
+  message: 'Enter your office number:',
+  name: 'office'
+});
+const engPrompt = empPrompt.concat({
+  type: 'input',
+  message: 'Enter their github:',
+  name: 'github'
+});
+const internPrompt = empPrompt.concat({
+  type: 'input',
+  message: 'Enter employee school:',
+  name: 'school'
+});
 
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
+// Prompt user for first team member data. First team member is project manager.
+inquirer
+  .prompt(managerPrompt)
+  .then((data) => {
+    team.push(new Manager(data.name, data.id, data.email, data.office));
+    let addAnother = true;
+    while(addAnother){
+      inquirer
+        .prompt([
+          {
+            type: 'rawlist',
+            message: 'Who do you want to add to the project?',
+            name: 'next',
+            choices: [
+              'Engineer',
+              'Intern',
+              'Nobody else'
+            ]
+          }
+        ])
+        .then((data) => {
+          switch(data.next) {
+            case 'Engineer':
+              inquirer
+                .prompt([engPrompt])
+                .then((data) => {
+                  team.push(new Engineer(data.name, data.id, data.email, data.github));
+                });
+              break;
+            case 'Intern':
+              inquirer
+                .prompt([internPrompt])
+                .then((data) => {
+                  team.push(new Intern(data.name, data.id, data.email, data.school))
+                });
+              break;
+
+            case 'Nobody else':
+              addAnother = false;
+          }
+        });
+    }
+    console.log(team);
+  });
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
